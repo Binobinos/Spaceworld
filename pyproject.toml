@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spaceworld"
+version = "0.1.0"
+authors = [
+    {name = "binobinos", email = "binobinos.dev@gmail.com"},
+]
+description = "Spaceworld is a new generation Cli framework for convenient development of your teams written in Python 3.12+ with support for asynchronous commands"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.12"
+keywords = ["python", "shell", "cli", "performance", "terminal", "async", "python3", "typehints", "spaceworld"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Utilities",
+]
+
+[project.urls]
+Bug_Tracker = "https://github.com/Binobinos/SpaceWorld/issues"
+Source_Code = "https://github.com/Binobinos/SpaceWorld"
+
+[tool.setuptools]
+packages = ["spaceworld"]
+
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.package-data]
+spaceworld = ["py.typed"]

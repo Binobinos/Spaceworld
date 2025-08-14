@@ -1,0 +1,14 @@
+"""Annotation Exclusion File."""
+
+from spaceworld.exceptions.spaceworld_error import SpaceWorldError
+
+
+class AnnotationsError(SpaceWorldError):
+    """
+    Exception raised for annotation-related failures.
+
+    Typical cases include:
+    - Duplicate annotation registration
+    - Invalid annotation types
+    - Annotation processing failures
+    """

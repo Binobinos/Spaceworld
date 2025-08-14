@@ -1,75 +1,190 @@
-# SpaceWorld CLI
-Spaceworld CLI - Это Cli Фреймворк нового поколения для удобной разработки своих
-команд написанный на Python 3.11+ с поддержкой асинхронных команд
+# SpaceWorld
+[![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### Документация
-- eng [English](eng)
-- ru [Russian](ru)
 
-## Возможности
-- Создание модульной структуры команд и модулей
-- Поддержка инъекции и валидации аргументов 
-- Поддержка асинхронных команд
-- Поддержка удобной настройки команд
-- Добавление скрытых команд
-- Собственные режимы команд для удобного управления
-- Alias для команд
-- Подтверждение опасных команд из коробки
+**Spaceworld is a new generation Cli framework for convenient development of your
+teams written in Python 3.12+ with support for asynchronous commands**
 
-# Простое использование
+Source Code: https://github.com/Binobinos/SpaceWorld
+
+
+The key features are:
+
+- Highest speed: For high-load applications
+- Huge flexibility: The ability to customize handlers, commands, and modules
+- Code simplicity: With all the advantages, your code remains as simple as possible
+- Support for *args, **kwargs
+- Extended type annotations: Use new annotations like Annotated, Literal, Union, and others
+- Support for Validators and transformers in annotations
+
+# Example
+
+The simplest example
 
 ```python
-from base_module import BaseModule
-from space_world_api import SpaceWorld, MyWriter
-
-module: BaseModule = BaseModule(name="sw",
-                                docs="Базовые команды приложения SpaceWorld")
+import spaceworld
 
 
-@module.register_command(name="help",
-                         docs="Возвращает справку по командам",
-                         activate_modes=["normal", "debug"])
-def spaceworld_help(console: SpaceWorld, **kwargs):
-    console.writer.write("\n".join(console.return_commands()))
+def main():
+    print("Hello World")
 
 
-@module.register_command(name="set",
-                         docs="Устанавливает введенный режим",
-                         example="set [MODE NAME] - set normal, set debug",
-                         activate_modes=["all"])
-def set(console: SpaceWorld, mode_name: str):
-    console.set_mode(mode_name)
-    console.writer.write(f"Установил {mode_name}")
+if __name__ == '__main__':
+    spaceworld.run(main)
+```
 
+Copy that to a file main.py.
 
-@module.register_command(name="print_normal",
-                         docs="Выводит сообщение в обычном режиме",
-                         example="print_normal [MESSAGE] - print_normal spaceworld",
-                         activate_modes=["normal"])
-def print_normal(writer: MyWriter, message: str = "bino"):
-    writer.write(message)
-
-
-@module.register_command(name="print_debug",
-                         docs="Выводит сообщение в debug режиме",
-                         example="print_debug [MESSAGE] - print_debug spaceworld",
-                         activate_modes=["debug"])
-def print_debug(writer: MyWriter, message: str):
-    writer.write(message)
-
-
-def register() -> BaseModule:
-    return module
-
+Test it:
 
 ```
-# Документация
-- [module](ru%2Fmodule) 
-- - [Module.md](ru%2Fmodule%2FModule.md)
-- [command](ru%2Fcommand)
-- - [Command.md](ru%2Fcommand%2FCommand.md)
-- [SpaceWorldAPI.md](ru%2FSpaceWorldAPI.md)
-- --
-## Лицензия
-© Binobinos official. Все права защищены.
-Лицензия MIT    
+$ python main.py main
+
+Hello World
+
+$ python main.py main --help
+
+Usage: main [ARGS] [OPTIONS]  
+None documentation
+
+Options:
+  --help - Displays the help on the command
+
+```
+
+# One Cli argument
+
+This output for the function looks very simple.
+Let's create a new function. hello, which displays a welcome message to the user
+
+```python
+import spaceworld
+
+
+def hello(name: str):
+    print(f"Hello {name}")
+
+
+if __name__ == '__main__':
+    spaceworld.run(hello)
+```
+
+Now let's run this script and see what happens.
+
+```shell
+$ python app.py hello
+
+ERROR: Missing required argument: 'name'
+```
+
+We see an error due to the absence of the name argument. Let's welcome bino
+
+```shell
+$ python app.py hello bino
+
+Hello bino
+```
+# Async command
+
+Creating an asynchronous command
+
+```python
+import asyncio
+
+import spaceworld
+
+
+async def sleep(second: int):
+    await asyncio.sleep(second)
+    print(f"Hello in {second} second")
+
+
+if __name__ == '__main__':
+    spaceworld.run(sleep)
+
+```
+
+Copy that to a file main.py.
+
+Test it:
+```shell
+$ python .\main.py sleep 1
+
+# After 1 second
+Hello in 1 second
+
+$ python .\main.py sleep
+
+# After 1 second
+Hello in 1 second
+
+$ python .\main.py sleep 5
+
+# After 5 second
+Hello in 5 second
+```
+
+# The validation Command
+
+Creating a validation Command
+
+```python
+
+from typing import Annotated
+
+import spaceworld
+
+
+def check(
+        age: Annotated[
+            int,
+            lambda x: x if x >= 18 else
+            ValueError("The user must be over 18 years old")]):
+    print(f"Hello {age} year old")
+
+
+if __name__ == '__main__':
+    spaceworld.run(check)
+
+```
+
+Copy that to a file main.py.
+
+Test it:
+```shell
+$ python .\main.py check 1
+
+ERROR:Invalid argument for 'age':
+Error in the Annotated validation for `1`: Arg: 1, Error: The user must be over 18 years old, <class 'spaceworld.exceptions.annotations_error.AnnotationsError'>      
+
+$ python .\main.py check 15
+
+ERROR:Invalid argument for 'age': 
+Error in the Annotated validation for `15`: Arg: 15, Error: The user must be over 18 years old, <class 'spaceworld.exceptions.annotations_error.AnnotationsError'>
+
+$ python .\main.py check 18
+
+Hello 18 year old
+
+$ python .\main.py check -1
+
+ERROR:Invalid argument for 'age': 
+Error in the Annotated validation for `-1`: Arg: -1, Error: The user must be over 18 years old, <class 'spaceworld.exceptions.annotations_error.AnnotationsError'>
+```
+
+---
+
+Great!
+As we can see, we entered the hello command with the bino argument and the script displayed greeting messages to him.
+
+But what if we want to make a conclusion in big letters? Then let's add a flag.
+
+## Documentation
+
+Full documentation this:
+[Docs](documentation/learn.md)
+
+## License
+
+This project is licensed under the terms of the MIT license.
