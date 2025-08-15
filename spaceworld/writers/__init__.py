@@ -3,7 +3,4 @@
 from .writer import Writer
 from .my_writer import MyWriter
 
-__all__ = (
-    "MyWriter",
-    "Writer"
-)
+__all__ = ("MyWriter", "Writer")

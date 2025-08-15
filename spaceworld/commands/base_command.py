@@ -1,11 +1,7 @@
 """Implementing the basic SpaceWorld command."""
 
 import asyncio
-from inspect import (
-    iscoroutinefunction,
-    Parameter,
-    signature
-)
+from inspect import iscoroutinefunction, Parameter, signature
 from typing import Unpack
 
 from spaceworld.types import (
@@ -14,12 +10,9 @@ from spaceworld.types import (
     NewArgs,
     NewKwargs,
     Parameters,
-    UserAny
+    UserAny,
 )
-from spaceworld.utils.util import (
-    BaseCommandAnnotated,
-    BaseCommandConfig
-)
+from spaceworld.utils.util import BaseCommandAnnotated, BaseCommandConfig
 
 
 class BaseCommand:
@@ -47,17 +40,18 @@ class BaseCommand:
         "_help_text",
         "_parameters",
         "config",
-        "_examples"
+        "_examples",
     )
 
     def __init__(
-            self,
-            *,
-            name: None | str = None,
-            aliases: Args | None = None,
-            func: DynamicCommand,
-            big_docs: None | str = None,
-            **opt: Unpack[BaseCommandAnnotated]) -> None:
+        self,
+        *,
+        name: None | str = None,
+        aliases: Args | None = None,
+        func: DynamicCommand,
+        big_docs: None | str = None,
+        **opt: Unpack[BaseCommandAnnotated],
+    ) -> None:
         """
         Initialize a new command instance.
 
@@ -82,21 +76,21 @@ class BaseCommand:
         self._help_text: None | str = None
 
         docs = opt.get("docs", self.func.__doc__) or ""
-        self.config: BaseCommandConfig = {"activate_modes": opt.get("activate_modes", {"normal"}),
-                                          "hidden": opt.get("hidden", False),
-                                          "deprecated": opt.get("deprecated", False),
-                                          "big_docs": big_docs or docs,
-                                          "confirm": opt.get("confirm", ""),
-                                          "history": opt.get("history", False),
-                                          "is_async": None,
-                                          "docs": docs,
-                                          "example": "",
-                                          "cached": True}
+        self.config: BaseCommandConfig = {
+            "activate_modes": opt.get("activate_modes", {"normal"}),
+            "hidden": opt.get("hidden", False),
+            "deprecated": opt.get("deprecated", False),
+            "big_docs": big_docs or docs,
+            "confirm": opt.get("confirm", ""),
+            "history": opt.get("history", False),
+            "is_async": None,
+            "docs": docs,
+            "example": "",
+            "cached": True,
+        }
 
     @property  # noqa
-    def is_async(
-            self) \
-            -> None | bool:
+    def is_async(self) -> None | bool:
         """
         Lazily returns the is_async.
 
@@ -108,9 +102,7 @@ class BaseCommand:
         return self.config["is_async"]
 
     @property
-    def cached(
-            self) \
-            -> bool:
+    def cached(self) -> bool:
         """
         Returns the caching value of the function.
 
@@ -120,9 +112,7 @@ class BaseCommand:
         return True
 
     @property
-    def help_text(
-            self) \
-            -> str:
+    def help_text(self) -> str:
         """
         Lazily returns the help table.
 
@@ -134,9 +124,7 @@ class BaseCommand:
         return self._help_text
 
     @property
-    def big_docs(
-            self) \
-            -> str:
+    def big_docs(self) -> str:
         """
         Return a large documentation on the function.
 
@@ -146,9 +134,7 @@ class BaseCommand:
         return self.config["big_docs"]
 
     @property
-    def examples(
-            self) \
-            -> str:
+    def examples(self) -> str:
         """
         Lazily returns the example table.
 
@@ -160,9 +146,7 @@ class BaseCommand:
         return self.config["example"]
 
     @property
-    def parameters(
-            self) \
-            -> Parameters:
+    def parameters(self) -> Parameters:
         """
         Return function parameters.
 
@@ -181,20 +165,18 @@ class BaseCommand:
             Сообщение об устаревшей команде и confirm команде
         """
         deprecated_msg = (
-            f"Deprecated: {"YES" if isinstance(dp, bool) else f"the message: {dp}"}"
+            f"Deprecated: {'YES' if isinstance(dp, bool) else f'the message: {dp}'}"
             if (dp := self.config["deprecated"])
             else ""
         )
         confirmation_msg = (
-            f"Confirm {"ation YES" if isinstance(cm, bool) else f"ing the message: {cm}"} "
+            f"Confirm {'ation YES' if isinstance(cm, bool) else f'ing the message: {cm}'} "
             if (cm := self.config["confirm"])
             else ""
         )
         return deprecated_msg, confirmation_msg
 
-    def get_help_doc(
-            self) \
-            -> str:
+    def get_help_doc(self) -> str:
         """
         Generate formatted help documentation for the command.
 
@@ -211,19 +193,16 @@ class BaseCommand:
         """
         deprecated_msg, confirmation_msg = self.get_msg()
         return (
-                f"Usage: {self.examples}"
-                f"{self.big_docs or "None documentation"}\n"
-                f"{f'Args: \n{args}\n\n' if (args := self._get_args_info()) else ""}\n"
-                f"Options: \n{self._get_options_info()}\n"
-                f"{'Hidden' if self.config["hidden"] else ''}\n"
-                f"{deprecated_msg}"
-                f"{confirmation_msg}"
+            f"Usage: {self.examples}"
+            f"{self.big_docs or 'None documentation'}\n"
+            f"{f'Args: \n{args}\n\n' if (args := self._get_args_info()) else ''}\n"
+            f"Options: \n{self._get_options_info()}\n"
+            f"{'Hidden' if self.config['hidden'] else ''}\n"
+            f"{deprecated_msg}"
+            f"{confirmation_msg}"
         )
 
-    def generate_example(
-            self,
-            examples: str | Args) \
-            -> str:
+    def generate_example(self, examples: str | Args) -> str:
         """
         Generate documentation for the team.
 
@@ -235,27 +214,23 @@ class BaseCommand:
         prefix: dict[UserAny, str] = {
             Parameter.KEYWORD_ONLY: "--",
             Parameter.VAR_POSITIONAL: "*",
-            Parameter.VAR_KEYWORD: "**"
+            Parameter.VAR_KEYWORD: "**",
         }
 
-        msg = " ".join(
-            [
-                (
-                    "["
-                    f"{prefix.get(prm.kind, "")}"
-                    f"{prm.name}: {an.__name__ if (an := prm.annotation) != prm.empty else "Any"}"
-                    f"{f" = '{prm.default}'" if prm.default != prm.empty else ""}"
-                    "]"
-                )
-                for prm in self.parameters
-            ]
-        )
+        msg = " ".join([
+            (
+                "["
+                f"{prefix.get(prm.kind, '')}"
+                f"{prm.name}: {an.__name__ if (an := prm.annotation) != prm.empty else 'Any'}"
+                f"{f" = '{prm.default}'" if prm.default != prm.empty else ''}"
+                "]"
+            )
+            for prm in self.parameters
+        ])
         examples = "\n".join(examples) if isinstance(examples, list) else examples
-        return f"{self.name}" f" [ARGS] [OPTIONS] {msg} " f"\n{examples}"
+        return f"{self.name} [ARGS] [OPTIONS] {msg} \n{examples}"
 
-    def _get_args_info(
-            self) \
-            -> str:
+    def _get_args_info(self) -> str:
         """
         Format parameter information for help documentation.
 
@@ -265,18 +240,14 @@ class BaseCommand:
                  - Types
                  - Default values
         """
-        return "\n".join(
-            [
-                f"  {prm.name}: {prm.annotation}"
-                for prm in self.parameters
-                if prm.kind not in {prm.KEYWORD_ONLY,
-                                    prm.VAR_KEYWORD} and prm.annotation is not bool
-            ]
-        )
+        return "\n".join([
+            f"  {prm.name}: {prm.annotation}"
+            for prm in self.parameters
+            if prm.kind not in {prm.KEYWORD_ONLY, prm.VAR_KEYWORD}
+            and prm.annotation is not bool
+        ])
 
-    def _get_options_info(
-            self) \
-            -> str:
+    def _get_options_info(self) -> str:
         """
         Format parameter information for help documentation.
 
@@ -288,21 +259,20 @@ class BaseCommand:
         """
         system_options = [
             "  --help - Displays the help on the command",
-            "  --force - Disables command confirmations"
-            "(For confirm command)" if self.config["confirm"] else "",
+            "  --force - Disables command confirmations(For confirm command)"
+            if self.config["confirm"]
+            else "",
         ]
         options = [
-                      f"  --{prm.name.replace("_", "-")}: {prm.annotation.__name__} = {prm.default}"
-                      for prm in self.parameters
-                      if prm.kind in {prm.KEYWORD_ONLY, prm.VAR_KEYWORD} or prm.annotation is bool
-                  ] + system_options
+            f"  --{prm.name.replace('_', '-')}: {prm.annotation.__name__} = {prm.default}"
+            for prm in self.parameters
+            if prm.kind in {prm.KEYWORD_ONLY, prm.VAR_KEYWORD} or prm.annotation is bool
+        ] + system_options
         return "\n".join(options)
 
     async def run_async_command(  # noqa
-            self,
-            args: NewArgs,
-            kwargs: NewKwargs) \
-            -> UserAny:
+        self, args: NewArgs, kwargs: NewKwargs
+    ) -> UserAny:
         """
         Execute an async command with provided arguments.
 
@@ -312,10 +282,7 @@ class BaseCommand:
         """
         return await self.func(*args, **kwargs)
 
-    def __call__(
-            self,
-            *args: UserAny,
-            **kwargs: UserAny) -> UserAny:
+    def __call__(self, *args: UserAny, **kwargs: UserAny) -> UserAny:
         """
         Run func.
 

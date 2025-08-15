@@ -27,7 +27,7 @@ class MyWriter(Writer):
             prefix ():
             *text: Items to display (will be space-joined and string-converted)
         """
-        print(f"{prefix}{" ".join(str(item) for item in text)}")
+        print(f"{prefix}{' '.join(str(item) for item in text)}")
 
     def info(self, *text: UserAny) -> None:
         """

@@ -6,15 +6,8 @@ from typing import Unpack
 from spaceworld.commands.base_command import BaseCommand
 from spaceworld.exceptions.command_error import CommandCreateError
 from spaceworld.exceptions.module_error import SubModuleCreateError
-from spaceworld.types import (
-    Args,
-    DynamicCommand,
-    UserAny
-)
-from spaceworld.utils.util import (
-    BaseCommandAnnotated,
-    register
-)
+from spaceworld.types import Args, DynamicCommand, UserAny
+from spaceworld.utils.util import BaseCommandAnnotated, register
 
 
 class BaseModule:
@@ -34,21 +27,9 @@ class BaseModule:
         modules: Dictionary of nested submodules
     """
 
-    __slots__ = (
-        "name",
-        "docs",
-        "commands",
-        "modules",
-        "_help_text",
-        "_cached"
-    )
+    __slots__ = ("name", "docs", "commands", "modules", "_help_text", "_cached")
 
-    def __init__(
-            self,
-            name: str,
-            docs: str = "",
-            cached: bool = True) \
-            -> None:
+    def __init__(self, name: str, docs: str = "", cached: bool = True) -> None:
         """
         Initialize a new module instance.
 
@@ -64,9 +45,7 @@ class BaseModule:
         self._cached = cached
 
     @property
-    def cached(
-            self) \
-            -> bool:
+    def cached(self) -> bool:
         """
         Returns the caching value of the function.
 
@@ -76,9 +55,7 @@ class BaseModule:
         return self._cached
 
     @property
-    def help_text(
-            self) \
-            -> str:
+    def help_text(self) -> str:
         """
         Lazily returns the help table.
 
@@ -89,10 +66,7 @@ class BaseModule:
             self._help_text = self.get_help_doc()
         return self._help_text
 
-    def decorator(
-            self,
-            func: DynamicCommand) \
-            -> DynamicCommand:
+    def decorator(self, func: DynamicCommand) -> DynamicCommand:
         """
         Register a function as a basic command in the module.
 
@@ -108,25 +82,27 @@ class BaseModule:
         name = func.__name__
         if name in self.commands:
             raise CommandCreateError(f"Command '{name}' already exists")
-        command = BaseCommand(func=func,
-                              hidden=False,
-                              docs="",
-                              deprecated=False,
-                              examples=[],
-                              confirm=False,
-                              activate_modes={"normal"},
-                              history=True)
+        command = BaseCommand(
+            func=func,
+            hidden=False,
+            docs="",
+            deprecated=False,
+            examples=[],
+            confirm=False,
+            activate_modes={"normal"},
+            history=True,
+        )
         self.commands[name] = command
         return func
 
     def command(
-            self,
-            *,
-            name: None | str = None,
-            aliases: Args | None = None,
-            big_docs: None | str = None,
-            **kwargs: Unpack[BaseCommandAnnotated]) \
-            -> DynamicCommand:
+        self,
+        *,
+        name: None | str = None,
+        aliases: Args | None = None,
+        big_docs: None | str = None,
+        **kwargs: Unpack[BaseCommandAnnotated],
+    ) -> DynamicCommand:
         """
         Decorate that registers a function as a configured command.
 
@@ -144,9 +120,7 @@ class BaseModule:
         if aliases is None:
             aliases = []
 
-        def decorator(
-                func: DynamicCommand) \
-                -> DynamicCommand:
+        def decorator(func: DynamicCommand) -> DynamicCommand:
             """
             Register a function with arguments.
 
@@ -160,14 +134,10 @@ class BaseModule:
             names = [alias not in self.commands for alias in aliases]
             if not all(names + [name not in self.commands]):
                 raise CommandCreateError(
-                    f"Command '{"/".join(aliases + [func_name])} already exists"
+                    f"Command '{'/'.join(aliases + [func_name])} already exists"
                 )
             cmd = BaseCommand(
-                name=func_name,
-                big_docs=big_docs,
-                aliases=aliases,
-                func=func,
-                **kwargs
+                name=func_name, big_docs=big_docs, aliases=aliases, func=func, **kwargs
             )
             self.commands[func_name] = cmd
             for alias in cmd.aliases:
@@ -176,10 +146,7 @@ class BaseModule:
 
         return decorator
 
-    def spaceworld(
-            self,
-            target: type[UserAny] | DynamicCommand) \
-            -> UserAny:
+    def spaceworld(self, target: type[UserAny] | DynamicCommand) -> UserAny:
         """
         Register a callable or class as commands in SpaceWorld.
 
@@ -227,20 +194,19 @@ class BaseModule:
         return register(
             target=target,
             module_func=self.submodule,
-            command_func=self.command(activate_modes={"all"},
-                                      docs="",
-                                      history=True,
-                                      confirm=False,
-                                      examples=[],
-                                      deprecated=False,
-                                      hidden=False),
+            command_func=self.command(
+                activate_modes={"all"},
+                docs="",
+                history=True,
+                confirm=False,
+                examples=[],
+                deprecated=False,
+                hidden=False,
+            ),
             module=module,
         )
 
-    def submodule(
-            self,
-            module: "BaseModule") \
-            -> "BaseModule":
+    def submodule(self, module: "BaseModule") -> "BaseModule":
         """
         Register a submodule within this module.
 
@@ -256,10 +222,8 @@ class BaseModule:
         return self.modules[module.name]
 
     def module(
-            self,
-            *args: DynamicCommand | UserAny,
-            **kwargs: UserAny) \
-            -> Callable[[DynamicCommand], "BaseModule"] | UserAny:
+        self, *args: DynamicCommand | UserAny, **kwargs: UserAny
+    ) -> Callable[[DynamicCommand], "BaseModule"] | UserAny:
         """
         Create a submodule.
 
@@ -280,9 +244,7 @@ class BaseModule:
             docs = func.__doc__ or ""
             return self.submodule(module=BaseModule(name, docs))
 
-        def decorator(
-                func: DynamicCommand) \
-                -> BaseModule:
+        def decorator(func: DynamicCommand) -> BaseModule:
             """
             Register and returns the SubModule.
 
@@ -298,9 +260,7 @@ class BaseModule:
 
         return decorator
 
-    def get_help_doc(
-            self) \
-            -> str:
+    def get_help_doc(self) -> str:
         """
         Generate formatted help documentation for the command.
 
@@ -316,10 +276,11 @@ class BaseModule:
                  - Confirmation requirements
         """
         examples = "\n\t".join(
-            f"{cmd.examples}\t{cmd.config["docs"]}" for cmd in self.commands.values())
+            f"{cmd.examples}\t{cmd.config['docs']}" for cmd in self.commands.values()
+        )
         msg = f"\n\t{examples}"
         return (
-            f"Module `{self.name}` {f"- {self.docs.strip()}" if self.docs.strip() else ""}\n"
+            f"Module `{self.name}` {f'- {self.docs.strip()}' if self.docs.strip() else ''}\n"
             f"Commands: {msg}\n"
             "Module Flags: \n"
             "\n\t--help\\-h \tDisplays the help\n"

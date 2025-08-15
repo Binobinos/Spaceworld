@@ -6,18 +6,15 @@ from inspect import signature
 from typing import TypedDict
 
 from spaceworld.annotation_manager import AnnotationManager
-from spaceworld.types import (
-    UserAny,
-    DynamicCommand,
-    Transformer
-)
+from spaceworld.types import UserAny, DynamicCommand, Transformer
 
 
 def register(
-        target: type[UserAny] | DynamicCommand,
-        module_func: Transformer,
-        command_func: Callable[[DynamicCommand], DynamicCommand],
-        module: UserAny) -> UserAny | DynamicCommand:
+    target: type[UserAny] | DynamicCommand,
+    module_func: Transformer,
+    command_func: Callable[[DynamicCommand], DynamicCommand],
+    module: UserAny,
+) -> UserAny | DynamicCommand:
     """
     Register a callable or class as commands or submodule in SpaceWorld.
 
@@ -55,9 +52,7 @@ def register(
     return command_func(target)
 
 
-def annotation_depends(
-        func: Callable[..., UserAny]) \
-        -> Callable[..., UserAny]:
+def annotation_depends(func: Callable[..., UserAny]) -> Callable[..., UserAny]:
     """
     Decorate for automatic dependency injection based on function annotations.
 
@@ -83,9 +78,9 @@ def annotation_depends(
         """
         parameters = tuple(signature(func).parameters.values())
         annotations = AnnotationManager()
-        processed_args, processed_kwargs, _ = annotations.preparing_args(parameters,
-                                                                         list(args),
-                                                                         kwargs)
+        processed_args, processed_kwargs, _ = annotations.preparing_args(
+            parameters, list(args), kwargs
+        )
         result = func(*processed_args, **processed_kwargs)
         return result
 

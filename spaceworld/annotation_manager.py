@@ -14,9 +14,7 @@ from typing import (
 )
 from uuid import UUID
 
-from spaceworld.exceptions import (
-    AnnotationsError
-)
+from spaceworld.exceptions import AnnotationsError
 from spaceworld.types import (
     AnnotateArgType,
     Arg,
@@ -30,7 +28,7 @@ from spaceworld.types import (
     Parameters,
     Transformer,
     TupleArgs,
-    UserAny
+    UserAny,
 )
 
 
@@ -47,15 +45,9 @@ class AnnotationManager:
             - lambda functions with the signature Callable[[Any], Any]
     """
 
-    __slots__ = (
-        "annotations",
-        "args_cache",
-        "transformers"
-    )
+    __slots__ = ("annotations", "args_cache", "transformers")
 
-    def __init__(
-            self) \
-            -> None:
+    def __init__(self) -> None:
         """
         Initialize a new module instance.
 
@@ -65,7 +57,8 @@ class AnnotationManager:
         self.annotations: dict[str, AttributeType] = {}
         self.args_cache: dict[TupleArgs, CacheType] = {}
         self.transformers: dict[
-            AttributeType | Transformer | Any | None, Transformer] = {
+            AttributeType | Transformer | Any | None, Transformer
+        ] = {
             int: int,
             float: float,
             Decimal: Decimal,
@@ -80,10 +73,8 @@ class AnnotationManager:
         }
 
     def add_custom_transformer(
-            self,
-            type_: AttributeType,
-            transformer: Transformer) \
-            -> Transformer:
+        self, type_: AttributeType, transformer: Transformer
+    ) -> Transformer:
         """
         Add a custom handler for annotations.
 
@@ -100,10 +91,8 @@ class AnnotationManager:
         return self.transformers[type_]
 
     def annotate(
-            self,
-            annotation: AttributeType,
-            arg: AnnotateArgType) \
-            -> AnnotateArgType:
+        self, annotation: AttributeType, arg: AnnotateArgType
+    ) -> AnnotateArgType:
         """
         Convert the annotation argument to the final value.
 
@@ -125,13 +114,13 @@ class AnnotationManager:
             case None:
                 return self._annotate_base_type(annotation, arg)
             case _:
-                raise AnnotationsError(f"Unsupported type in the annotation: {annotation}")
+                raise AnnotationsError(
+                    f"Unsupported type in the annotation: {annotation}"
+                )
 
     def _annotate_union(
-            self,
-            annotation: AttributeType,
-            arg: AnnotateArgType) \
-            -> AnnotateArgType:
+        self, annotation: AttributeType, arg: AnnotateArgType
+    ) -> AnnotateArgType:
         """
         Annotate the Union type.
 
@@ -149,16 +138,18 @@ class AnnotationManager:
                 return arg
             except AnnotationsError as error:
                 errors.append(error)
-        errors_mes = [f"{num} Error: {error}" for num, error in enumerate(errors, start=1)]
-        message = f"\n\t{"\n\t".join(errors_mes)}"
-        message = f"None of the types in the Union are suitable. List of errors: {message}"
+        errors_mes = [
+            f"{num} Error: {error}" for num, error in enumerate(errors, start=1)
+        ]
+        message = f"\n\t{'\n\t'.join(errors_mes)}"
+        message = (
+            f"None of the types in the Union are suitable. List of errors: {message}"
+        )
         raise AnnotationsError(message) from errors[-1]
 
     def _annotate_annotated(
-            self,
-            annotation: AttributeType,
-            arg: AnnotateArgType) \
-            -> AnnotateArgType:
+        self, annotation: AttributeType, arg: AnnotateArgType
+    ) -> AnnotateArgType:
         """
         Annotate the Annotated type.
 
@@ -173,17 +164,14 @@ class AnnotationManager:
             try:
                 arg = self.annotate(param_type, arg)
             except Exception as error:
-                message = (
-                    f"Error in the Annotated validation for `{arg}`: {error}, {type(error)}"
-                )
+                message = f"Error in the Annotated validation for `{arg}`: {error}, {type(error)}"
                 raise AnnotationsError(message) from error
         return arg
 
     @staticmethod
     def _annotate_literal(
-            annotation: AttributeType,
-            arg: AnnotateArgType) \
-            -> AnnotateArgType:
+        annotation: AttributeType, arg: AnnotateArgType
+    ) -> AnnotateArgType:
         """
         Annotate the Literal type.
 
@@ -196,15 +184,13 @@ class AnnotationManager:
         """
         args = get_args(annotation)
         if arg not in args:
-            message = f"The value of `{arg}` does not match Literal[{"/".join(args)}]"
+            message = f"The value of `{arg}` does not match Literal[{'/'.join(args)}]"
             raise AnnotationsError(message)
         return arg
 
     def _annotate_base_type(
-            self,
-            annotation: AttributeType,
-            arg: AnnotateArgType) \
-            -> AnnotateArgType:
+        self, annotation: AttributeType, arg: AnnotateArgType
+    ) -> AnnotateArgType:
         """
         Annotate the basic types.
 
@@ -226,10 +212,8 @@ class AnnotationManager:
         return self._annotate_normal_type(annotation, arg)
 
     def _annotate_normal_type(
-            self,
-            annotation: AttributeType,
-            arg: AnnotateArgType) \
-            -> AnnotateArgType:
+        self, annotation: AttributeType, arg: AnnotateArgType
+    ) -> AnnotateArgType:
         """
         Annotate basic types and callable objects.
 
@@ -249,10 +233,7 @@ class AnnotationManager:
         raise AnnotationsError(f"Unsupported type in the annotation:{annotation}")
 
     @staticmethod
-    def _annotate_enum(
-            annotation: UserAny,
-            arg: AnnotateArgType) \
-            -> AnnotateArgType:
+    def _annotate_enum(annotation: UserAny, arg: AnnotateArgType) -> AnnotateArgType:
         """
         Annotate Enum and string annotations.
 
@@ -265,16 +246,12 @@ class AnnotationManager:
         """
         valid_values = [e.value for e in annotation]
         if arg not in valid_values:
-            message = (
-                f"The value of `{arg}` does not match the Enum[{"/".join(valid_values)}]"
-            )
+            message = f"The value of `{arg}` does not match the Enum[{'/'.join(valid_values)}]"
             raise AnnotationsError(message)
         return annotation(arg)
 
     @staticmethod
-    def _convert_to_bool(
-            value: AnnotateArgType) \
-            -> bool:
+    def _convert_to_bool(value: AnnotateArgType) -> bool:
         """
         Convert the value to bool.
 
@@ -287,9 +264,7 @@ class AnnotationManager:
         return str(value).lower() in {"true", "yes", "y"}
 
     @staticmethod
-    def _convert_datetime(
-            value: AnnotateArgType) \
-            -> datetime:
+    def _convert_datetime(value: AnnotateArgType) -> datetime:
         """
         Convert the argument to a datatime object.
 
@@ -305,10 +280,8 @@ class AnnotationManager:
             raise AnnotationsError(f"Invalid ISO date: {value}") from e
 
     def _annotate_callable(
-            self,
-            func: Transformer,
-            arg: AnnotateArgType) \
-            -> AnnotateArgType:
+        self, func: Transformer, arg: AnnotateArgType
+    ) -> AnnotateArgType:
         """
         Annotate callable objects.
 
@@ -327,10 +300,7 @@ class AnnotationManager:
             raise AnnotationsError(f"Arg: {arg}, Error: {error}") from error
 
     @staticmethod
-    def _annotate_lambda(
-            func: Transformer,
-            arg: AnnotateArgType) \
-            -> AnnotateArgType:
+    def _annotate_lambda(func: Transformer, arg: AnnotateArgType) -> AnnotateArgType:
         """
         Annotate lambda.
 
@@ -351,10 +321,7 @@ class AnnotationManager:
             return arg
         return value
 
-    def pre_preparing_arg(
-            self,
-            args: TupleArgs) \
-            -> tuple[Args, Kwargs]:
+    def pre_preparing_arg(self, args: TupleArgs) -> tuple[Args, Kwargs]:
         """
         Prepare arguments.
 
@@ -382,10 +349,7 @@ class AnnotationManager:
         return positional_args, keyword_args
 
     @staticmethod
-    def _preparing_bool_flag(
-            arg: Arg,
-            keyword_args: Kwargs) \
-            -> None:
+    def _preparing_bool_flag(arg: Arg, keyword_args: Kwargs) -> None:
         """
         Handle bool flags.
 
@@ -403,10 +367,7 @@ class AnnotationManager:
         keyword_args[name.replace("-", "_")] = not is_no
 
     @staticmethod
-    def startswith_value(
-            value: str,
-            sym: str) \
-            -> bool:
+    def startswith_value(value: str, sym: str) -> bool:
         """
         Determine whether a string begins and ends with a substring.
 
@@ -419,11 +380,7 @@ class AnnotationManager:
         """
         return value.startswith(sym) and value.endswith(sym)
 
-    def _preparing_value_flag(
-            self,
-            arg: Arg,
-            keyword_args: Kwargs) \
-            -> None:
+    def _preparing_value_flag(self, arg: Arg, keyword_args: Kwargs) -> None:
         """
         Prepare flags with the value.
 
@@ -445,10 +402,8 @@ class AnnotationManager:
 
     @staticmethod
     def _preparing_short_flag(
-            arg: Arg,
-            positional_args: Args,
-            keyword_args: Kwargs) \
-            -> None:
+        arg: Arg, positional_args: Args, keyword_args: Kwargs
+    ) -> None:
         """
         Prepare a one-letter flag(-h, -abc, and the like).
 
@@ -468,11 +423,11 @@ class AnnotationManager:
                 keyword_args[name.lower()] = name.islower()
 
     def preparing_args(
-            self,
-            parameters: Parameters,
-            positional_args: Args | NewArgs,
-            keyword_args: Kwargs | NewKwargs) \
-            -> CacheType:
+        self,
+        parameters: Parameters,
+        positional_args: Args | NewArgs,
+        keyword_args: Kwargs | NewKwargs,
+    ) -> CacheType:
         """
         Process raw command arguments into properly typed and structured parameters.
 
@@ -525,9 +480,9 @@ class AnnotationManager:
             param_name = param.name
             match param.kind:
                 case param.VAR_POSITIONAL:
-                    self.preparing_var_positional(positional_args,
-                                                  new_args_positional,
-                                                  param)
+                    self.preparing_var_positional(
+                        positional_args, new_args_positional, param
+                    )
                     positional_args_index = len(positional_args)
 
                 case param.KEYWORD_ONLY if param_name in keyword_args:
@@ -535,9 +490,7 @@ class AnnotationManager:
                     new_args_keyword[param_name] = self.preparing_annotate(param, value)
 
                 case param.VAR_KEYWORD:
-                    self.preparing_var_keyword(keyword_args,
-                                               new_args_keyword,
-                                               param)
+                    self.preparing_var_keyword(keyword_args, new_args_keyword, param)
                 case _ if param_name in keyword_args:
                     value = keyword_args.pop(param_name)
                     new_args_keyword[param_name] = self.preparing_annotate(param, value)
@@ -546,19 +499,12 @@ class AnnotationManager:
                     new_args_positional.append(self.preparing_annotate(param, value))
 
                 case _ if param.default != param.empty:
-                    self.preparing_default(
-                        new_args_positional,
-                        new_args_keyword,
-                        param)
+                    self.preparing_default(new_args_positional, new_args_keyword, param)
                 case _:
                     raise TypeError(f"Missing required argument: '{param_name}'")
         return new_args_positional, new_args_keyword, keyword_args
 
-    def preparing_annotate(
-            self,
-            prm: Parameter,
-            value: UserAny) \
-            -> AnnotateArgType:
+    def preparing_annotate(self, prm: Parameter, value: UserAny) -> AnnotateArgType:
         """
         Perform annotation if the annotation is not empty.
 
@@ -570,16 +516,17 @@ class AnnotationManager:
             None
         """
         try:
-            return self.annotate(prm.annotation, value) if prm.annotation != prm.empty else value
+            return (
+                self.annotate(prm.annotation, value)
+                if prm.annotation != prm.empty
+                else value
+            )
         except Exception as e:
             raise ValueError(f"Invalid argument for '{prm.name}': \n{e}") from e
 
     def preparing_var_positional(
-            self,
-            new_args: Args,
-            new_args_positional: NewArgs,
-            prm: Parameter) \
-            -> None:
+        self, new_args: Args, new_args_positional: NewArgs, prm: Parameter
+    ) -> None:
         """
         Prepare *args arguments.
 
@@ -598,11 +545,8 @@ class AnnotationManager:
         )
 
     def preparing_var_keyword(
-            self,
-            lst: Kwargs,
-            new_args_keyword: NewKwargs,
-            prm: Parameter) \
-            -> None:
+        self, lst: Kwargs, new_args_keyword: NewKwargs, prm: Parameter
+    ) -> None:
         """
         Prepare **kwargs arguments.
 
@@ -619,11 +563,8 @@ class AnnotationManager:
             new_args_keyword[name] = annotate(prm, value)
 
     def preparing_default(
-            self,
-            new_args_positional: NewArgs,
-            new_args_keyword: NewKwargs,
-            prm: Parameter) \
-            -> None:
+        self, new_args_positional: NewArgs, new_args_keyword: NewKwargs, prm: Parameter
+    ) -> None:
         """
         Prepare default values.
 

@@ -4,10 +4,7 @@ The basic Abstract Writer class for console output.
 Inherit your class from it to create a unique output.
 """
 
-from abc import (
-    ABC,
-    abstractmethod
-)
+from abc import ABC, abstractmethod
 
 from spaceworld.types import UserAny
 

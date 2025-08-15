@@ -2,7 +2,7 @@
 [![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <a href="https://pypi.org/project/typer" target="_blank">
-    <img src="https://img.shields.io/pypi/v/spaceworld?color=%2334D058&label=pypi%20package" alt="Package version">
+    <img src="https://img.shields.io/pypi/v/typer?color=%2334D058&label=pypi%20package" alt="Package version">
 </a>
 
 **Spaceworld is a new generation Cli framework for convenient development of your
@@ -14,11 +14,11 @@ documentation: https://binobinos.github.io/Spaceworld
 The key features are:
 
 - Highest speed: For high-load applications
-- Huge flexibility: The ability to customize handlers, commands, and modules
-- Code simplicity: With all the advantages, your code remains as simple as possible
-- Support for *args, **kwargs
-- Extended type annotations: Use new annotations like Annotated, Literal, Union, and others
-- Support for Validators and transformers in annotations
+  - Huge flexibility: The ability to customize handlers, commands, and modules
+  - Code simplicity: With all the advantages, your code remains as simple as possible
+  - Support for *args, **kwargs
+  - Extended type annotations: Use new annotations like Annotated, Literal, Union, and others
+  - Support for Validators and transformers in annotations
 
 # Example
 
