@@ -40,3 +40,8 @@ config.json
 *.pdf
 *.xlsx
 *.csv
+.vscode
+dist
+.mypy_cache
+.idea
+site
