@@ -1,13 +1,15 @@
 # SpaceWorld
 [![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
+<a href="https://pypi.org/project/typer" target="_blank">
+    <img src="https://img.shields.io/pypi/v/typer?color=%2334D058&label=pypi%20package" alt="Package version">
+</a>
 
 **Spaceworld is a new generation Cli framework for convenient development of your
 teams written in Python 3.12+ with support for asynchronous commands**
 
 Source Code: https://github.com/Binobinos/SpaceWorld
-
+documentation: https://binobinos.github.io/Spaceworld
 
 The key features are:
 
@@ -179,11 +181,6 @@ Great!
 As we can see, we entered the hello command with the bino argument and the script displayed greeting messages to him.
 
 But what if we want to make a conclusion in big letters? Then let's add a flag.
-
-## Documentation
-
-Full documentation this:
-[Docs](documentation/learn.md)
 
 ## License
 

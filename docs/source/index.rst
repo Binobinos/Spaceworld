@@ -3,10 +3,6 @@
 SpaceWorld CLI Framework
 =======================
 
-.. image:: _static/logo.png
-   :width: 200
-   :alt: SpaceWorld Logo
-
 Next-generation CLI framework for Python 3.11+ with async support.
 
 **Key Features**:
