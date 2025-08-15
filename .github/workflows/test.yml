@@ -43,21 +43,3 @@ jobs:
           name: coverage-${{ matrix.os }}-py${{ matrix.python-version }}
           path: coverage.xml
 
-  report:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download coverage artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: coverage-reports
-
-      - name: Combine coverage
-        run: |
-          pip install coverage
-          python -m coverage combine coverage-reports/coverage-*
-          python -m coverage report
-          python -m coverage xml
-
-      - name: Upload combined coverage
-        uses: codecov/codecov-action@v3
