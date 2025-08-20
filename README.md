@@ -1,9 +1,10 @@
 # SpaceWorld
 [![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-<a href="https://pypi.org/project/typer" target="_blank">
-    <img src="https://img.shields.io/pypi/v/typer?color=%2334D058&label=pypi%20package" alt="Package version">
+<a href="https://pypi.org/project/spaceworld" target="_blank">
+<img src="https://img.shields.io/pypi/v/spaceworld?color=%2334D058&label=pypi%20package" alt="Package version">
 </a>
+[![PyPI Downloads](https://static.pepy.tech/badge/spaceworld)](https://pepy.tech/projects/spaceworld)
 
 **Spaceworld is a new generation Cli framework for convenient development of your
 teams written in Python 3.12+ with support for asynchronous commands**
@@ -19,6 +20,16 @@ The key features are:
   - Support for *args, **kwargs
   - Extended type annotations: Use new annotations like Annotated, Literal, Union, and others
   - Support for Validators and transformers in annotations
+
+# Install Spaceworld
+
+The first step is to install SpaceWorld.
+
+First, make sure you create your virtual environment, activate it, and then install it, for example with:
+
+```shell
+pip install spaceworld
+```
 
 # Example
 

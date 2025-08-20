@@ -16,17 +16,23 @@ keywords = ["python", "shell", "cli", "performance", "terminal", "async", "pytho
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Terminals",
     "Topic :: Utilities",
+    "Typing :: Typed",
 ]
 
 [project.urls]
 Bug_Tracker = "https://github.com/Binobinos/SpaceWorld/issues"
 Source_Code = "https://github.com/Binobinos/SpaceWorld"
+Changelog = "https://github.com/Binobinos/SpaceWorld/releases"
+
 
 [tool.setuptools]
 packages = ["spaceworld"]
