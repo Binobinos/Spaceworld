@@ -14,8 +14,7 @@ from typing import (
 )
 from uuid import UUID
 
-from spaceworld.exceptions import AnnotationsError
-from spaceworld.types import (
+from ._types import (
     AnnotateArgType,
     Arg,
     Args,
@@ -30,6 +29,7 @@ from spaceworld.types import (
     TupleArgs,
     UserAny,
 )
+from .exceptions import AnnotationsError
 
 
 class AnnotationManager:

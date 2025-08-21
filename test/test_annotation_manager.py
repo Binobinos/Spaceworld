@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Union, Optional
+from typing import Union
 
 import pytest
 
@@ -7,7 +7,7 @@ from spaceworld import (
     AnnotationManager,
     AnnotationsError
 )
-from spaceworld.types import (
+from spaceworld._types import (
     Transformer,
     UserAny,
     TupleArgs,

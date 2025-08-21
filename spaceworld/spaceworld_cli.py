@@ -5,14 +5,7 @@ import sys
 from collections.abc import Callable
 from typing import Annotated, Never, TypedDict, Unpack
 
-from spaceworld.annotation_manager import AnnotationManager
-from spaceworld.commands.base_command import BaseCommand
-from spaceworld.exceptions.annotations_error import AnnotationsError
-from spaceworld.exceptions.command_error import CommandCreateError
-from spaceworld.exceptions.module_error import ModuleCreateError
-from spaceworld.exceptions.spaceworld_error import ExitError
-from spaceworld.module.base_module import BaseModule
-from spaceworld.types import (
+from ._types import (
     Args,
     CacheType,
     DynamicCommand,
@@ -21,9 +14,16 @@ from spaceworld.types import (
     TupleArgs,
     UserAny,
 )
-from spaceworld.utils.util import annotation_depends, BaseCommandAnnotated, register
-from spaceworld.writers.my_writer import MyWriter
-from spaceworld.writers.writer import Writer
+from .annotation_manager import AnnotationManager
+from .commands.base_command import BaseCommand
+from .exceptions.annotations_error import AnnotationsError
+from .exceptions.command_error import CommandCreateError
+from .exceptions.module_error import ModuleCreateError
+from .exceptions.spaceworld_error import ExitError
+from .module.base_module import BaseModule
+from .utils.util import annotation_depends, BaseCommandAnnotated, register
+from .writers.my_writer import MyWriter
+from .writers.writer import Writer
 
 
 class CommandCacheEntry(TypedDict):
@@ -47,9 +47,17 @@ class SpaceWorld:
         "confirmation_command",
         "command_cache",
         "handlers",
+        "docs",
+        "versions",
     )
 
-    def __init__(self, writer: None | Writer = None) -> None:
+    def __init__(
+            self,
+            writer: None | Writer = None,
+            name: str = "",
+            versions: str = "",
+            docs: str = "",
+    ) -> None:
         """
         Initialize the SpaceWorld instance.
 
@@ -76,6 +84,9 @@ class SpaceWorld:
         """
         self.commands: dict[str, BaseCommand] = {}
         self.modules: dict[str, BaseModule] = {}
+        self.name = name
+        self.docs = docs
+        self.versions = versions
         self.handlers: dict[str, Callable[..., None | ExitError | UserAny | Never]] = {}
         self.command_cache: dict[TupleArgs, CommandCacheEntry] = {}
         self.di: AnnotationManager = AnnotationManager()
@@ -84,6 +95,7 @@ class SpaceWorld:
         self.di.add_custom_transformer(SpaceWorld, lambda _: self)
         self.di.add_custom_transformer(Writer, lambda _: self.writer)
         self.handler(name="help.command")(self._write_help)
+        self.handler(name="help")(self.help_handler)
         self.handler(name="confirm.handle")(self._handle_confirm)
         self.handler(name="deprecated.handle")(self._write_deprecated)
         self.handler(name="errors.handle")(self.error_handler)
@@ -392,6 +404,30 @@ class SpaceWorld:
 
         return _wraps
 
+    def help_handler(self) -> None:
+        examples_command = "\n\t".join(
+            f"{cmd.examples}\t{cmd.config['docs']}" for cmd in self.commands.values()
+        )
+        examples_module = "\n\t".join(
+            f"{cmd.examples}\t{cmd.config['docs']}" for cmd in self.modules.values()
+        )
+        msg = f"\n\t{examples_command}"
+        msg_ = f"\n\t{examples_module}"
+
+        self.writer.write(
+            (
+                f"{self.name} "
+                f"{f'- {self.docs.strip()}' if self.docs.strip() else ''} "
+                f"{self.versions if self.versions.strip() else ''}\n"
+                f"Commands: {msg}\n"
+                f"{f"Modules: {msg_}\n" if msg_.strip() else ""}"
+                "Flags: \n"
+                "\n\t--help\\-h \tDisplays the help\n"
+                "\n\t--force\\-f\tCancels confirmation\n\n"
+                "For reference on a specific command: \n"
+            )
+        )
+
     def execute(self, command: TupleArgs | Args) -> UserAny | None:
         """
         Execute a console command in the SpaceWorld environment.
@@ -414,7 +450,7 @@ class SpaceWorld:
                - True indicates successful execution
         """
         if not command:
-            self.writer.error("Null command")
+            self.get_handler("help")()
             return None
 
         if self.confirmation_command:
@@ -739,6 +775,7 @@ class SpaceWorld:
         Processes the user's response to a confirmation prompt and either:
         - Executes the pending command (if confirmed)
         - Cancels the operation (if denied)
+
         Args:
             response: User's input response to the confirmation prompt
         Behavior:

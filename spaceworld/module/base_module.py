@@ -3,11 +3,11 @@
 from collections.abc import Callable
 from typing import Unpack
 
-from spaceworld.commands.base_command import BaseCommand
-from spaceworld.exceptions.command_error import CommandCreateError
-from spaceworld.exceptions.module_error import SubModuleCreateError
-from spaceworld.types import Args, DynamicCommand, UserAny
-from spaceworld.utils.util import BaseCommandAnnotated, register
+from .._types import Args, DynamicCommand, UserAny
+from ..commands.base_command import BaseCommand
+from ..exceptions.command_error import CommandCreateError
+from ..exceptions.module_error import SubModuleCreateError
+from ..utils.util import BaseCommandAnnotated, register
 
 
 class BaseModule:

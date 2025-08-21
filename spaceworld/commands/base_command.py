@@ -4,7 +4,7 @@ import asyncio
 from inspect import iscoroutinefunction, Parameter, signature
 from typing import Unpack
 
-from spaceworld.types import (
+from .._types import (
     Args,
     DynamicCommand,
     NewArgs,
@@ -12,7 +12,7 @@ from spaceworld.types import (
     Parameters,
     UserAny,
 )
-from spaceworld.utils.util import BaseCommandAnnotated, BaseCommandConfig
+from ..utils.util import BaseCommandAnnotated, BaseCommandConfig
 
 
 class BaseCommand:

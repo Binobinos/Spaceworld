@@ -1,6 +1,6 @@
 """Command Exception File."""
 
-from spaceworld.exceptions.spaceworld_error import SpaceWorldError
+from .spaceworld_error import SpaceWorldError
 
 
 class CommandError(SpaceWorldError):

@@ -1,8 +1,8 @@
 """The implementation of the MyWriter class is inherited from Writer. Uses print."""
 
-from spaceworld.types import UserAny
+from .._types import UserAny
 
-from spaceworld.writers.writer import Writer
+from ..writers.writer import Writer
 
 
 class MyWriter(Writer):

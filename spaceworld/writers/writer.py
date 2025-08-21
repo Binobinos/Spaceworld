@@ -6,7 +6,7 @@ Inherit your class from it to create a unique output.
 
 from abc import ABC, abstractmethod
 
-from spaceworld.types import UserAny
+from .._types import UserAny
 
 
 class Writer(ABC):

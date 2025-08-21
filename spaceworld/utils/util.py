@@ -5,8 +5,8 @@ from functools import wraps
 from inspect import signature
 from typing import TypedDict
 
-from spaceworld.annotation_manager import AnnotationManager
-from spaceworld.types import UserAny, DynamicCommand, Transformer
+from .._types import UserAny, DynamicCommand, Transformer
+from ..annotation_manager import AnnotationManager
 
 
 def register(
