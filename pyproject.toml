@@ -1,10 +1,94 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 140
+target-version = ['py312']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 140
+known_first_party = ["core"]
+
+[tool.pydocstyle]
+ignore = [
+    "D100",
+    "D203",
+    "D212",
+    "D213",
+    "D214",
+    "D413",
+    "D407",
+    "D417",
+    "D406",
+    "D102",
+    "D101",
+]
+match = "(?!_).*"
+match-dir = "(?!_).*"
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_error_codes = true
+ignore_missing_imports = true
+ignore_errors = true
+
+[tool.flake8]
+max-line-length = 140
+max-complexity = 18
+select = "B,C,E,F,W,T4,B9"
+exclude = ".git,__pycache__,build,dist,.venv,venv"
+filename = "*.py"
+
+[tool.pylint]
+max-line-length = 140
+disable = [
+    "missing-docstring",
+    "too-few-public-methods",
+    "import-error",
+    "protected-access",
+    "duplicate-code"
+]
+
+[tool.semantic_release]
+version_source = "tag"
+version_variable = "pyproject.toml:version"
+commit_parser = "conventional"
+major_tag = "major"
+minor_tag = "minor"
+patch_tag = "patch"
+changelog_capitalize = true
+changelog_scope = true
+upload_to_release = true
+upload_to_pypi = false
+
+
+changelog_exclude_commits = [
+    "typo",
+    "style",
+    "refactor"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "core/tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-v --cov=core --cov-report=xml"
 
 [project]
 name = "spaceworld"
-version = "0.1.1"
+version = "0.1.2"
 authors = [
     {name = "binobinos", email = "binobinos.dev@gmail.com"},
 ]
