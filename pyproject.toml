@@ -119,7 +119,6 @@ Changelog = "https://github.com/Binobinos/SpaceWorld/releases"
 
 
 [tool.setuptools]
-packages = ["spaceworld"]
 include-package-data = true
 zip-safe = false
 
