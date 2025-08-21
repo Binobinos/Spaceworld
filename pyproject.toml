@@ -70,7 +70,7 @@ patch_tag = "patch"
 changelog_capitalize = true
 changelog_scope = true
 upload_to_release = true
-upload_to_pypi = false
+upload_to_pypi = true
 
 
 changelog_exclude_commits = [
@@ -120,9 +120,14 @@ Changelog = "https://github.com/Binobinos/SpaceWorld/releases"
 
 [tool.setuptools]
 packages = ["spaceworld"]
-
 include-package-data = true
 zip-safe = false
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["spaceworld*"]
+exclude = ["test*", "tests*", "docs*", "examples*"]
+
 [tool.setuptools.package-data]
 spaceworld = ["py.typed"]
+"*" = ["*.py", "**/*.py", "*.txt", "**/*.txt", "*.json", "**/*.json"]
